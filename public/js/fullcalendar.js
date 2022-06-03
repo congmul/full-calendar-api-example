@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded',async function() {
     const calendarEl = document.getElementById('calendar');
     
-    const events = await getCalendarEvents();
+    // Get all events from DB.
+    const events = await getCalendarEvents(); 
+    let eventID;
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -16,41 +18,44 @@ document.addEventListener('DOMContentLoaded',async function() {
         dayMaxEvents: true, // when too many events in a day, show the popover
         dateClick: function(info) {
             var event = prompt('Enter Your Event');
+            eventID = uuidv4();
             if(event != null && event != ""){
+                console.log(uuidv4())
                 calendar.addEvent({
+                    id: eventID,
                     title: event,
                     start: info.dateStr,
-                    allDay: true
+                    allDay: info.allDay
                 });
             }
-            //TODO: Call Database to store this event
         },
         eventClick: function(info) {
-            console.log(info.el)
-            // TODO: Give options - Update or Delete this Event
             let answer = confirm('do you want to delete?')
             if(answer){
                 var event = calendar.getEventById(info.event._def.publicId)
                 event.remove()
             }
-            info.el.style.borderColor = 'red';
         },
-        // TODO: Get Events a specific user has
         events: events,
 
         // CallBack function
-        eventAdd:function (addInfo) {
-            console.log(addInfo)
+        eventAdd:async function (addInfo) {
+            const newEvent = {
+                "id": eventID,
+                "title": addInfo.event.title,
+                "start": addInfo.event.startStr,
+                "allDay": true
+            }
+            await postCalendarEvents(newEvent);
         },
         eventChange: function (changeInfo) {
             console.log(changeInfo)
         },
-        eventRemove: function (eventRemove) {
-            console.log(eventRemove)
+        eventRemove: async function (eventRemove) {
+            let selectedEventId = eventRemove.event._def.publicId
+            await deleteCalendarEvent(selectedEventId);
         }
     });
     calendar.render();
-    // var event = calendar.getEventById('a')
-    // event.remove()
 });
 
