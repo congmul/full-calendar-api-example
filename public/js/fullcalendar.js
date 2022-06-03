@@ -1,5 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded',async function() {
     const calendarEl = document.getElementById('calendar');
+    
+    const events = await getCalendarEvents();
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
@@ -33,20 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
             info.el.style.borderColor = 'red';
         },
         // TODO: Get Events a specific user has
-        events: [
-            {
-                id: 'a',
-                title: 'my event',
-                start: '2022-06-03 15:00:00',
-                end: '2022-06-04 10:00:00',
-            },
-            {
-                id: 'a',
-                title: 'my event',
-                start: '2022-06-03',
-                end: '2022-06-04',
-            }
-        ],
+        events: events,
 
         // CallBack function
         eventAdd:function (addInfo) {
