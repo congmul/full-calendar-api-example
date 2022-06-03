@@ -13,6 +13,16 @@ async function postCalendarEvents(body) {
     });
     return response;
 }
+async function updateCalendarEvent(eventId, updatedEvent) {
+    const response = await fetch(`/api/calendar/${eventId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedEvent)
+    });
+    return response;
+}
 async function deleteCalendarEvent(eventId) {
     const response = await fetch(`/api/calendar/${eventId}`, {
         method: 'DELETE',

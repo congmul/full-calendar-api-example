@@ -48,8 +48,16 @@ document.addEventListener('DOMContentLoaded',async function() {
             }
             await postCalendarEvents(newEvent);
         },
-        eventChange: function (changeInfo) {
-            console.log(changeInfo)
+        eventChange: async function (changeInfo) {
+            const selectedEventId = changeInfo.event._def.publicId;
+            const updatedEvent = {
+                "id": changeInfo.event._def.publicId, 
+                "title": changeInfo.event.title,
+                "start": changeInfo.event.startStr,
+                "end": changeInfo.event.endStr,
+                "allDay": true
+            }
+            await updateCalendarEvent(selectedEventId, updatedEvent);
         },
         eventRemove: async function (eventRemove) {
             let selectedEventId = eventRemove.event._def.publicId
