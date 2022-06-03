@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded',async function() {
     const calendarEl = document.getElementById('calendar');
     
     // Get all events from DB.
-    const events = await getCalendarEvents(); 
+    let events;
+    try{
+        events = await getCalendarEvents(); 
+    }catch(err){
+        console.log(err);
+    }
     let eventID;
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -20,7 +25,6 @@ document.addEventListener('DOMContentLoaded',async function() {
             var event = prompt('Enter Your Event');
             eventID = uuidv4();
             if(event != null && event != ""){
-                console.log(uuidv4())
                 calendar.addEvent({
                     id: eventID,
                     title: event,
@@ -30,7 +34,7 @@ document.addEventListener('DOMContentLoaded',async function() {
             }
         },
         eventClick: function(info) {
-            let answer = confirm('do you want to delete?')
+            let answer = confirm('Do you want to delete?')
             if(answer){
                 var event = calendar.getEventById(info.event._def.publicId)
                 event.remove()
@@ -46,7 +50,11 @@ document.addEventListener('DOMContentLoaded',async function() {
                 "start": addInfo.event.startStr,
                 "allDay": true
             }
-            await postCalendarEvents(newEvent);
+            try {
+                await postCalendarEvents(newEvent);
+            }catch(err){
+                console.log(err);
+            }
         },
         eventChange: async function (changeInfo) {
             const selectedEventId = changeInfo.event._def.publicId;
@@ -54,14 +62,21 @@ document.addEventListener('DOMContentLoaded',async function() {
                 "id": changeInfo.event._def.publicId, 
                 "title": changeInfo.event.title,
                 "start": changeInfo.event.startStr,
-                "end": changeInfo.event.endStr,
-                "allDay": true
+                "end": changeInfo.event.endStr
             }
-            await updateCalendarEvent(selectedEventId, updatedEvent);
+            try{
+                await updateCalendarEvent(selectedEventId, updatedEvent);
+            }catch(err){
+                console.log(err)
+            }
         },
         eventRemove: async function (eventRemove) {
             let selectedEventId = eventRemove.event._def.publicId
-            await deleteCalendarEvent(selectedEventId);
+            try{
+                await deleteCalendarEvent(selectedEventId);
+            }catch(err){
+                console.log(err);
+            }
         }
     });
     calendar.render();
